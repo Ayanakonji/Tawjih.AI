@@ -170,7 +170,6 @@ else:
     height=400,
     title="Your Orientation Match Scores"
 )
-
-st.altair_chart(bar_chart, use_container_width=True)
+    st.altair_chart(bar_chart, use_container_width=True)
 
 
