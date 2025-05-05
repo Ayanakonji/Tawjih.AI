@@ -1,9 +1,10 @@
 ﻿import streamlit as st
-
+import pandas as pd
+import altair as alt
 st.set_page_config(page_title="Academic Orientation Bot", layout="centered")
 
 st.title("🎓 AI Academic Orientation Advisor")
-st.write("Answer a few quick questions and discover your best post-bac academic paths!")
+
 
 # Initialize
 if "submitted" not in st.session_state:
@@ -11,6 +12,7 @@ if "submitted" not in st.session_state:
 
 if not st.session_state.submitted:
     #Diagnostic_Form
+    st.write("Answer a few quick questions and discover your best post-bac academic paths!")
     with st.form("diagnostic_form"):
         name = st.text_input("👤 Your full name")
         city = st.text_input("📍 Your city")
@@ -73,14 +75,14 @@ else:
         scores["FMP"] += 3
         scores["ENSA"] += 2
         scores["ENSAM"] += 2
-        scores["ENCG"] += 2
-        scores["IAV"] += 2
+        scores["ENCG"] += 3
+        scores["IAV"] += 3
     elif ans["average"] == "12–13.99":
-        scores["FMP"] += 2
+        scores["FMP"] += 3
         scores["ENSA"] += 1
         scores["ENSAM"] += 1
-        scores["ENCG"] += 2
-        scores["IAV"] += 2
+        scores["ENCG"] += 3
+        scores["IAV"] += 3
 
     # Track Baccalaureate
     if "Science" in ans["track"]:
@@ -155,4 +157,20 @@ else:
         st.markdown(f"### {i}. {school} — {percent}% Match")
 
     st.button("🔁 Start Again", on_click=lambda: st.session_state.clear())
+
+    st.subheader("📈 Orientation Score Breakdown")
+    # Display the scores in a bar chart
+    df = pd.DataFrame(scores.items(), columns=["School","Score"])
+    bar_chart = alt.Chart(df).mark_bar(color="#4e79a7").encode(
+    x=alt.X("School", sort="-y"),
+    y="Score",
+    tooltip=["School", "Score"]
+).properties(
+    width=600,
+    height=400,
+    title="Your Orientation Match Scores"
+)
+
+st.altair_chart(bar_chart, use_container_width=True)
+
 
