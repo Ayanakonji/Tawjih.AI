@@ -64,34 +64,47 @@ else:
     if ans["average"] == "≥ 16":
         scores["CPGE"] += 3
         scores["FMP"] += 3
-        scores["ENSA"] += 2
+        scores["ENSA"] += 3
+        scores["ENSAM"] += 3
+        scores["ENCG"] += 3
+        scores["IAV"] += 3
     elif ans["average"] == "14–15.99":
+        scores["CPGE"] += 2
+        scores["FMP"] += 3
         scores["ENSA"] += 2
         scores["ENSAM"] += 2
         scores["ENCG"] += 2
+        scores["IAV"] += 2
     elif ans["average"] == "12–13.99":
-        scores["ENCG"] += 1
+        scores["FMP"] += 2
+        scores["ENSA"] += 1
         scores["ENSAM"] += 1
+        scores["ENCG"] += 2
+        scores["IAV"] += 2
 
-    # Track
+    # Track Baccalaureate
     if "Science" in ans["track"]:
         scores["CPGE"] += 2
         scores["ENSA"] += 2
         scores["FMP"] += 1
-        scores["ENSAM"] += 1
+        scores["ENSAM"] += 2
     if "Math" in ans["track"]:
-        scores["CPGE"] += 2
+        scores["CPGE"] += 3
+        scores["ENSAM"] += 2
+        scores["ENSA"] += 2
     if "Economics" in ans["track"]:
         scores["ENCG"] += 3
 
-    # Interests
+    # FAVORITE SUBJECTS
     for subj in ans["fav_subjects"]:
         if subj == "Mathematics":
             scores["CPGE"] += 2
             scores["ENSA"] += 2
+            scores["ENSAM"] += 2
         elif subj == "Physics":
             scores["CPGE"] += 2
             scores["ENSAM"] += 2
+            scores["ENSA"] += 2
         elif subj == "Biology":
             scores["FMP"] += 2
             scores["IAV"] += 2
@@ -99,14 +112,14 @@ else:
             scores["ENCG"] += 3
         elif subj == "Engineering":
             scores["ENSA"] += 3
-            scores["ENSAM"] += 2
+            scores["ENSAM"] += 3
         elif subj == "Agriculture":
             scores["IAV"] += 3
 
     # Career Goals
     if ans["career"] == "Engineer":
         scores["ENSA"] += 3
-        scores["ENSAM"] += 2
+        scores["ENSAM"] += 3
         scores["CPGE"] += 1
     elif ans["career"] == "Doctor/Pharmacist":
         scores["FMP"] += 3
@@ -115,20 +128,23 @@ else:
     elif ans["career"] == "Veterinary Expert":
         scores["IAV"] += 3
     elif ans["career"] == "Technician":
-        scores["ENSAM"] += 3
+        scores["ENSAM"] += 2
+        scores["ENSA"] += 2
 
     # Program Preference
     if ans["program_type"] == "Competitive and theory-based":
-        scores["CPGE"] += 2
+        scores["CPGE"] += 3
+        scores["ENSA"] += 2
+        scores["ENSAM"] += 2
     elif ans["program_type"] == "Hands-on and technical":
         scores["ENSAM"] += 2
         scores["ENSA"] += 1
     elif ans["program_type"] == "Balanced academic + practical":
-        scores["ENSA"] += 2
-        scores["ENCG"] += 1
-    elif ans["program_type"] == "Specialized/professional":
-        scores["IAV"] += 1
+        scores["IAV"] += 2
         scores["FMP"] += 1
+    elif ans["program_type"] == "Specialized/professional":
+        scores["IAV"] += 2
+        scores["FMP"] += 2
 
     # --- Final Match Calculation ---
     sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
