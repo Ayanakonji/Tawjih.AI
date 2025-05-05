@@ -5,6 +5,46 @@ st.set_page_config(page_title="Academic Orientation Bot", layout="centered")
 
 st.title("🎓 AI Academic Orientation Advisor")
 
+lang = st.selectbox("🌐 Choose your language / Choisissez votre langue / اختر اللغة", ["English", "Français","العربية"])
+translations = {
+    "English": {
+        "name": "👤 Your full name",
+        "city": "📍 Your city",
+        "track": "🎓 Your baccalaureate track",
+        "average": "📊 Your average (estimate)",
+        "subjects": "📘 Subjects you enjoy most (choose up to 2)",
+        "career": "💼 Your dream career",
+        "program": "🏫 Preferred program type",
+        "submit": "Get My Orientation 🔍",
+        "result": "📊 Your Top Orientation Matches",
+        "again": "🔁 Start Again"
+    },
+    "Français": {
+        "name": "👤 Votre nom complet",
+        "city": "📍 Votre ville",
+        "track": "🎓 Votre filière du bac",
+        "average": "📊 Votre moyenne (estimation)",
+        "subjects": "📘 Matières préférées (choisissez jusqu’à 2)",
+        "career": "💼 Métier de rêve",
+        "program": "🏫 Type de programme souhaité",
+        "submit": "Obtenir mon orientation 🔍",
+        "result": "📊 Vos meilleures orientations",
+        "again": "🔁 Recommencer"
+    },
+    "العربية": {
+        "name": "👤 الاسم الكامل",
+        "city": "📍 المدينة",
+        "track": "🎓 شعبة البكالوريا",
+        "average": "📊 المعدل التقديري",
+        "subjects": "📘 المواد المفضلة (اختر اثنين)",
+        "career": "💼 المهنة التي تحلم بها",
+        "program": "🏫 نوع البرنامج المفضل",
+        "submit": "احصل على توجيهي 🔍",
+        "result": "📊 أفضل التخصصات المناسبة لك",
+        "again": "🔁 ابدأ من جديد"
+    }
+}
+t = translations[lang]
 
 # Initialize
 if "submitted" not in st.session_state:
@@ -14,26 +54,15 @@ if not st.session_state.submitted:
     #Diagnostic_Form
     st.write("Answer a few quick questions and discover your best post-bac academic paths!")
     with st.form("diagnostic_form"):
-        name = st.text_input("👤 Your full name")
-        city = st.text_input("📍 Your city")
-        track = st.selectbox("🎓 Your baccalaureate track", [
-            "Mathematical Science", "Physical Science", "Life & Earth Science",
-            "Economics", "Technical Science"
-        ])
-        average = st.selectbox("📊 Your average (estimate)", [
-            "≥ 16", "14–15.99", "12–13.99", "10-11.99"
-        ])
-        fav_subjects = st.multiselect("📘 Subjects you enjoy most (choose up to 2)", [
-            "Mathematics", "Physics", "Biology", "Economics", "Agriculture"
-        ])
-        career = st.selectbox("💼 Your dream career", [
-            "Engineer", "Doctor/Pharmacist", "Economist", "Veterinary Expert", "Technician"
-        ])
-        program_type = st.selectbox("🏫 Preferred program type", [
-            "Competitive and theory-based", "Balanced academic + practical", "Hands-on and technical", "Specialized/professional"
-        ])
+        name = st.text_input(t["name"])
+        city = st.text_input(t["city"])
+        track = st.selectbox(t["city"])
+        average = st.selectbox(t["average"])
+        fav_subjects = st.multiselect(t["subjects"])
+        career = st.selectbox(t["career"])
+        program_type = st.selectbox(t["program"])
 
-        submitted = st.form_submit_button("Get My Orientation 🔍")
+        submitted = st.form_submit_button(t["submit"])
 
     if submitted:
         st.session_state.submitted = True
@@ -46,7 +75,7 @@ if not st.session_state.submitted:
         }
 
 else:
-    st.subheader("📊 Your Top Orientation Matches")
+    st.subheader(t["result"])
 
     # === SCORING ===
     scores = {
