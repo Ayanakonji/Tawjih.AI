@@ -5,19 +5,13 @@ import altair as alt
 st.set_page_config(page_title="Academic Orientation Bot", layout="centered")
 st.title("🎓 AI Academic Orientation Advisor")
 
-# Step 1: Ask language first
-if "lang_selected" not in st.session_state:
-    st.session_state.lang_selected = False
-
-if not st.session_state.lang_selected:
+# Step 1: Language selection
+if "lang" not in st.session_state:
     lang = st.selectbox("🌐 Choose your language / Choisissez votre langue / اختر اللغة", ["English", "Français", "العربية"])
     if st.button("✅ Continue"):
         st.session_state.lang = lang
-        st.session_state.lang_selected = True
-        st.experimental_rerun()  # <-- Change to this in case you still need it
-        # Removed rerun step and used flow via session state instead.
-
-# Step 2: Show form in selected language
+        st.session_state.submitted = False  # Reset any previous form submission
+        st.rerun()
 else:
     lang = st.session_state.lang
 
@@ -62,13 +56,7 @@ else:
 
     t = translations[lang]
 
-    # Initialize
-    if "submitted" not in st.session_state:
-        st.session_state.submitted = False
-
-    if not st.session_state.submitted:
-        # Diagnostic form
-        st.write("Answer a few quick questions and discover your best post-bac academic paths!")
+    if not st.session_state.get("submitted", False):
         with st.form("diagnostic_form"):
             name = st.text_input(t["name"])
             city = st.text_input(t["city"])
@@ -77,25 +65,23 @@ else:
             fav_subjects = st.multiselect(t["subjects"], ["Mathematics", "Physics", "Biology", "Economics", "Engineering", "Agriculture"])
             career = st.selectbox(t["career"], ["Engineer", "Doctor/Pharmacist", "Business Executive", "Veterinary Expert", "Technician"])
             program_type = st.selectbox(t["program"], ["Competitive and theory-based", "Hands-on and technical", "Balanced academic + practical", "Specialized/professional"])
-
             submitted = st.form_submit_button(t["submit"])
 
         if submitted:
             st.session_state.submitted = True
             st.session_state.answers = {
-                "name": name,
-                "city": city,
                 "track": track,
                 "average": average,
                 "fav_subjects": fav_subjects,
                 "career": career,
                 "program_type": program_type
             }
+            st.rerun()
 
     else:
         st.subheader(t["result"])
 
-        # Scoring system
+        # --- SCORING ---
         scores = {
             "CPGE": 0,
             "ENSA": 0,
@@ -107,112 +93,55 @@ else:
 
         ans = st.session_state.answers
 
-        # Rule-Based Matching (based on user's input)
         if ans["average"] == "≥ 16":
-            scores["CPGE"] += 3
-            scores["FMP"] += 3
-            scores["ENSA"] += 3
-            scores["ENSAM"] += 3
-            scores["ENCG"] += 3
-            scores["IAV"] += 3
+            for k in scores: scores[k] += 3
         elif ans["average"] == "14–15.99":
-            scores["CPGE"] += 2
-            scores["FMP"] += 3
-            scores["ENSA"] += 2
-            scores["ENSAM"] += 2
-            scores["ENCG"] += 3
-            scores["IAV"] += 3
+            scores.update({"CPGE": 2, "FMP": 3, "ENSA": 2, "ENSAM": 2, "ENCG": 3, "IAV": 3})
         elif ans["average"] == "12–13.99":
-            scores["FMP"] += 3
-            scores["ENSA"] += 1
-            scores["ENSAM"] += 1
-            scores["ENCG"] += 3
-            scores["IAV"] += 3
+            scores.update({"FMP": 3, "ENSA": 1, "ENSAM": 1, "ENCG": 3, "IAV": 3})
 
-        # Track Baccalaureate Matching
         if "Science" in ans["track"]:
-            scores["CPGE"] += 2
-            scores["ENSA"] += 2
-            scores["FMP"] += 1
-            scores["ENSAM"] += 2
+            scores["CPGE"] += 2; scores["ENSA"] += 2; scores["FMP"] += 1; scores["ENSAM"] += 2
         if "Math" in ans["track"]:
-            scores["CPGE"] += 3
-            scores["ENSAM"] += 2
-            scores["ENSA"] += 2
+            scores["CPGE"] += 3; scores["ENSAM"] += 2; scores["ENSA"] += 2
         if "Economics" in ans["track"]:
             scores["ENCG"] += 3
 
-        # FAVORITE SUBJECTS
         for subj in ans["fav_subjects"]:
-            if subj == "Mathematics":
-                scores["CPGE"] += 2
-                scores["ENSA"] += 2
-                scores["ENSAM"] += 2
-            elif subj == "Physics":
-                scores["CPGE"] += 2
-                scores["ENSAM"] += 2
-                scores["ENSA"] += 2
-            elif subj == "Biology":
-                scores["FMP"] += 2
-                scores["IAV"] += 2
-            elif subj == "Economics":
-                scores["ENCG"] += 3
-            elif subj == "Engineering":
-                scores["ENSA"] += 3
-                scores["ENSAM"] += 3
-            elif subj == "Agriculture":
-                scores["IAV"] += 3
+            match subj:
+                case "Mathematics": scores["CPGE"] += 2; scores["ENSA"] += 2; scores["ENSAM"] += 2
+                case "Physics": scores["CPGE"] += 2; scores["ENSA"] += 2; scores["ENSAM"] += 2
+                case "Biology": scores["FMP"] += 2; scores["IAV"] += 2
+                case "Economics": scores["ENCG"] += 3
+                case "Engineering": scores["ENSA"] += 3; scores["ENSAM"] += 3
+                case "Agriculture": scores["IAV"] += 3
 
-        # Career Goals
-        if ans["career"] == "Engineer":
-            scores["ENSA"] += 3
-            scores["ENSAM"] += 3
-            scores["CPGE"] += 1
-        elif ans["career"] == "Doctor/Pharmacist":
-            scores["FMP"] += 3
-        elif ans["career"] == "Business Executive":
-            scores["ENCG"] += 3
-        elif ans["career"] == "Veterinary Expert":
-            scores["IAV"] += 3
-        elif ans["career"] == "Technician":
-            scores["ENSAM"] += 2
-            scores["ENSA"] += 2
+        match ans["career"]:
+            case "Engineer": scores["ENSA"] += 3; scores["ENSAM"] += 3; scores["CPGE"] += 1
+            case "Doctor/Pharmacist": scores["FMP"] += 3
+            case "Business Executive": scores["ENCG"] += 3
+            case "Veterinary Expert": scores["IAV"] += 3
+            case "Technician": scores["ENSAM"] += 2; scores["ENSA"] += 2
 
-        # Program Preference
-        if ans["program_type"] == "Competitive and theory-based":
-            scores["CPGE"] += 3
-            scores["ENSA"] += 2
-            scores["ENSAM"] += 2
-        elif ans["program_type"] == "Hands-on and technical":
-            scores["ENSAM"] += 2
-            scores["ENSA"] += 1
-        elif ans["program_type"] == "Balanced academic + practical":
-            scores["IAV"] += 2
-            scores["FMP"] += 1
-        elif ans["program_type"] == "Specialized/professional":
-            scores["IAV"] += 2
-            scores["FMP"] += 2
+        match ans["program_type"]:
+            case "Competitive and theory-based": scores["CPGE"] += 3; scores["ENSA"] += 2; scores["ENSAM"] += 2
+            case "Hands-on and technical": scores["ENSAM"] += 2; scores["ENSA"] += 1
+            case "Balanced academic + practical": scores["IAV"] += 2; scores["FMP"] += 1
+            case "Specialized/professional": scores["IAV"] += 2; scores["FMP"] += 2
 
-        # Final Match Calculation
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        total_possible = max(sum(scores.values()), 1)
-
-        for i, (school, score) in enumerate(sorted_scores[:3], start=1):
-            percent = int((score / total_possible) * 100)
+        total = max(sum(scores.values()), 1)
+        for i, (school, score) in enumerate(sorted_scores[:3], 1):
+            percent = int((score / total) * 100)
             st.markdown(f"### {i}. {school} — {percent}% Match")
 
         st.button(t["again"], on_click=lambda: st.session_state.clear())
 
         st.subheader("📈 Orientation Score Breakdown")
-        # Display the scores in a bar chart
         df = pd.DataFrame(scores.items(), columns=["School", "Score"])
-        bar_chart = alt.Chart(df).mark_bar(color="#4e79a7").encode(
+        chart = alt.Chart(df).mark_bar(color="#4e79a7").encode(
             x=alt.X("School", sort="-y"),
             y="Score",
             tooltip=["School", "Score"]
-        ).properties(
-            width=600,
-            height=400,
-            title="Your Orientation Match Scores"
-        )
-        st.altair_chart(bar_chart, use_container_width=True)
+        ).properties(width=600, height=400)
+        st.altair_chart(chart, use_container_width=True)
