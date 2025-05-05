@@ -14,7 +14,8 @@ if not st.session_state.lang_selected:
     if st.button("✅ Continue"):
         st.session_state.lang = lang
         st.session_state.lang_selected = True
-        st.experimental_rerun()
+        st.experimental_rerun()  # <-- Change to this in case you still need it
+        # Removed rerun step and used flow via session state instead.
 
 # Step 2: Show form in selected language
 else:
