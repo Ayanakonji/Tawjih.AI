@@ -185,7 +185,7 @@ else:
         percent = int((score / total_possible) * 100)
         st.markdown(f"### {i}. {school} — {percent}% Match")
 
-    st.button("🔁 Start Again", on_click=lambda: st.session_state.clear())
+    st.button(t["again"], on_click=lambda: st.session_state.clear())
 
     st.subheader("📈 Orientation Score Breakdown")
     # Display the scores in a bar chart
