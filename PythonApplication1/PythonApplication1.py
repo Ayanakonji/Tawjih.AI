@@ -162,4 +162,5 @@ else:
             extra_diagnostic = st.radio("Do you want to take the additional diagnostic test?", ["Yes", "No"])
             if extra_diagnostic == "Yes":
                 st.write("Great! Let's start the additional diagnostic test.")
+                st.rerun()
             # Add extra diagnostic questions here
