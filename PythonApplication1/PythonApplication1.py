@@ -60,9 +60,9 @@ else:
         with st.form("diagnostic_form"):
             name = st.text_input(t["name"])
             city = st.text_input(t["city"])
-            track = st.selectbox(t["track"], ["Science", "Math", "Economics"])
-            average = st.selectbox(t["average"], ["≥ 16", "14–15.99", "12–13.99"])
-            fav_subjects = st.multiselect(t["subjects"], ["Mathematics", "Physics", "Biology", "Economics", "Engineering", "Agriculture"])
+            track = st.selectbox(t["track"], ["Physics", "Math", "Economics","Life and Earth Science"])
+            average = st.selectbox(t["average"], ["≥ 16", "14–15.99", "12–13.99", "10-11.99"])
+            fav_subjects = st.multiselect(t["subjects"], ["Mathematics", "Physics", "Biology", "Economics", "Agriculture"])
             career = st.selectbox(t["career"], ["Engineer", "Doctor/Pharmacist", "Business Executive", "Veterinary Expert", "Technician"])
             program_type = st.selectbox(t["program"], ["Competitive and theory-based", "Hands-on and technical", "Balanced academic + practical", "Specialized/professional"])
             submitted = st.form_submit_button(t["submit"])
@@ -99,11 +99,13 @@ else:
             scores.update({"CPGE": 2, "FMP": 3, "ENSA": 2, "ENSAM": 2, "ENCG": 3, "IAV": 3})
         elif ans["average"] == "12–13.99":
             scores.update({"FMP": 3, "ENSA": 1, "ENSAM": 1, "ENCG": 3, "IAV": 3})
+        elif ans["average"] == "10-11.99":
+            for k in scores: scores[k] += 1
 
-        if "Science" in ans["track"]:
-            scores["CPGE"] += 2; scores["ENSA"] += 2; scores["FMP"] += 1; scores["ENSAM"] += 2
+        if "Physics" in ans["track"]:
+            scores["CPGE"] += 2; scores["ENSA"] += 2; scores["FMP"] += 1; scores["ENSAM"] += 2; scores["IAV"] += 2
         if "Math" in ans["track"]:
-            scores["CPGE"] += 3; scores["ENSAM"] += 2; scores["ENSA"] += 2
+            scores["CPGE"] += 3; scores["ENSAM"] += 3; scores["ENSA"] += 3
         if "Economics" in ans["track"]:
             scores["ENCG"] += 3
 
@@ -111,13 +113,13 @@ else:
             match subj:
                 case "Mathematics": scores["CPGE"] += 2; scores["ENSA"] += 2; scores["ENSAM"] += 2
                 case "Physics": scores["CPGE"] += 2; scores["ENSA"] += 2; scores["ENSAM"] += 2
-                case "Biology": scores["FMP"] += 2; scores["IAV"] += 2
+                case "Biology": scores["FMP"] += 3; scores["IAV"] += 3
                 case "Economics": scores["ENCG"] += 3
                 case "Engineering": scores["ENSA"] += 3; scores["ENSAM"] += 3
                 case "Agriculture": scores["IAV"] += 3
 
         match ans["career"]:
-            case "Engineer": scores["ENSA"] += 3; scores["ENSAM"] += 3; scores["CPGE"] += 1
+            case "Engineer": scores["ENSA"] += 3; scores["ENSAM"] += 3; scores["CPGE"] += 2
             case "Doctor/Pharmacist": scores["FMP"] += 3
             case "Business Executive": scores["ENCG"] += 3
             case "Veterinary Expert": scores["IAV"] += 3
@@ -125,7 +127,7 @@ else:
 
         match ans["program_type"]:
             case "Competitive and theory-based": scores["CPGE"] += 3; scores["ENSA"] += 2; scores["ENSAM"] += 2
-            case "Hands-on and technical": scores["ENSAM"] += 2; scores["ENSA"] += 1
+            case "Hands-on and technical": scores["ENSAM"] += 2; scores["ENSA"] += 2
             case "Balanced academic + practical": scores["IAV"] += 2; scores["FMP"] += 1
             case "Specialized/professional": scores["IAV"] += 2; scores["FMP"] += 2
 
