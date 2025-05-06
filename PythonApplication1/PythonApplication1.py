@@ -81,7 +81,7 @@ else:
     else:
         st.subheader(t["result"])
 
-        # --- SCORING ---
+        # Score System
         scores = {
             "CPGE": 0,
             "ENSA": 0,
@@ -139,6 +139,7 @@ else:
 
         st.button(t["again"], on_click=lambda: st.session_state.clear())
 
+        # Display the scores in a bar chart
         st.subheader("📈 Orientation Score Breakdown")
         df = pd.DataFrame(scores.items(), columns=["School", "Score"])
         chart = alt.Chart(df).mark_bar(color="#4e79a7").encode(
@@ -147,7 +148,7 @@ else:
             tooltip=["School", "Score"]
         ).properties(width=600, height=400)
         st.altair_chart(chart, use_container_width=True)
-        
+        # Add a button to show extra diagnostic
         if "show_extra" not in st.session_state:
             st.session_state.show_extra = False
         if not st.session_state.show_extra:
@@ -162,5 +163,15 @@ else:
             extra_diagnostic = st.radio("Do you want to take the additional diagnostic test?", ["Yes", "No"])
             if extra_diagnostic == "Yes":
                 st.write("Great! Let's start the additional diagnostic test.")
-                st.rerun()
-            # Add extra diagnostic questions here
+
+            # What i am gonna do is to make two condionals if it yes then i will add the extra diagnostic questions if it no then i will make a question 
+            # how do u rate the result of the first diagnostic test and i will add a button to go back to the first diagnostic test
+            # for the yes response depends on the answer of the question i will make a diagnostic test to reveal his own speciality in the school he choosed then
+            # the test will end and i will ask him to rate the service and make a comments bar to leave a comment about the service
+            # this is the first service of my platform and i will add the map of the schools in morooco and the contact of the schools
+            # the third service is to make a chatbot in whatssap,telegram that had documentations about the tests to admission to the schools
+            
+                with st.form("extra_diagnostic_form"):
+                     # Add extra diagnostic questions here
+            
+           
