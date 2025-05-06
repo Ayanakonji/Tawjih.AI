@@ -151,6 +151,15 @@ else:
         if "show_extra_diagnostic" not in st.session_state:
             st.session_state.show_extra = False
         if not st.session_state.show_extra:
-            if st.button("🔍 Show Extra Diagnostic"):
+            if st.button("📄 Take Additional Diagnostic Test"):
                 st.session_state.show_extra = True
                 st.rerun()
+        if st.session_state.show_extra:
+            st.subheader("🔍 Extra Diagnostic")
+            st.write("This is an additional diagnostic test to help you find the best orientation.")
+            st.write("Based on the statistics , the best school choice is :", sorted_scores[0][0])
+            st.write("Agree to take an additional to deeply know about your choice, if you are then select yes, if it isn't then select no")
+            extra_diagnostic = st.radio("Do you want to take the additional diagnostic test?", ["Yes", "No"])
+            if extra_diagnostic == "Yes":
+                st.write("Great! Let's start the additional diagnostic test.")
+            # Add extra diagnostic questions here
