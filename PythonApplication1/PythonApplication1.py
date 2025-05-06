@@ -148,7 +148,7 @@ else:
         ).properties(width=600, height=400)
         st.altair_chart(chart, use_container_width=True)
         
-        if "show_extra_diagnostic" not in st.session_state:
+        if "show_extra" not in st.session_state:
             st.session_state.show_extra = False
         if not st.session_state.show_extra:
             if st.button("📄 Take Additional Diagnostic Test"):
