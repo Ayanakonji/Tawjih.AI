@@ -4,3 +4,4 @@ altair
 transformers
 torch
 sentencepiece
+langdetect

@@ -163,6 +163,8 @@ else:
             more_information = st.radio("Do you want to know more informations about your choices", ["Yes", "No"])
             if more_information == "Yes":
                 # Load JSON data
+                if "last_institution" not in st.session_state:
+                    st.session_state.last_institution = None
                 with open("moroccan_higher_education_programs(1).json", "r", encoding="utf-8") as f:
                     data = json.load(f)
                 st.title("🎓 Moroccan Academic Orientation Chatbot")
@@ -180,10 +182,11 @@ else:
 
                 # Identify institution
                 def find_institution(text):
-                    for name in data:
-                        if re.search(rf"\b{name}\b", text, re.IGNORECASE):
-                            return name
-                    return None
+                        text = text.lower()
+                        for name in data:
+                            if name.lower() in text:
+                                return name
+                        return None
 
                 # Identify requested section/topic
                 def find_topic(text):
@@ -241,25 +244,33 @@ else:
                     institution = find_institution(user_input)
                     topic = find_topic(user_input)
 
+                    # Use last mentioned institution if missing
+                    if not institution:
+                        institution = st.session_state.get("last_institution")
+
                     if not institution:
                         return {
-                            "fr": "❓ Je n’ai pas reconnu l’établissement. Essayez avec ‘ENSA’, ‘FMP’, etc.",
-                            "ar": "❓ لم أتمكن من تحديد المؤسسة. جرب استخدام أسماء مثل 'ENSA' أو 'FMP'.",
-                            "en": "❓ I couldn't identify the institution. Try 'ENSA', 'FMP', etc."
-                        }.get(lang, "❓ Institution not found.")
+                            "fr": "❓ Je n’ai pas reconnu l’établissement.",
+                            "ar": "❓ لم أتمكن من تحديد المؤسسة.",
+                            "en": "❓ I couldn't identify the institution."
+                        }.get(lang, "Institution not found.")
+
+                    # 🔥 Save current institution for follow-up questions
+                    st.session_state.last_institution = institution
 
                     info = data[institution]
-    
+
                     if topic:
                         return format_section(info, topic, lang)
                     else:
                         return {
-                            "fr": f"❓ Vous avez mentionné **{institution}**. Souhaitez-vous connaître ses *programmes*, *modalités d’admission*, *localisation* ou *débouchés* ?",
-                            "ar": f"❓ لقد ذكرت **{institution}**. هل ترغب في معرفة *البرامج*، *شروط القبول*، *الموقع*، أو *آفاق العمل*؟",
-                            "en": f"❓ You mentioned **{institution}**. Would you like to know about its *programs*, *admission*, *location*, or *careers*?"
+                            "fr": f"❓ Vous avez mentionné **{institution}**...",
+                            "ar": f"❓ لقد ذكرت **{institution}**...",
+                            "en": f"❓ You mentioned **{institution}**..."
                         }.get(lang, "Please clarify your question.")
 
-                # Input box
+
+                    # Input box
                 st.chat_message("assistant").markdown("💬 Exemple : _Quelles sont les spécialités de l’ENCG ?_")
 
                 user_input = st.chat_input("Posez votre question ici...")
