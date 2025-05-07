@@ -170,7 +170,7 @@ else:
                         return json.load(f)
 
                 def reformulate_answer(answer):
-                    input_text = f"summarize: {answer}"
+                    input_text = f"paraphrase: {answer}"
                     result = summarizer(input_text)
                     return result[0]['generated_text']
                 def answer_question_with_reformulating(school_data,question):
@@ -179,7 +179,8 @@ else:
                         context = f"{school}: {data.get('Presentation','')} Programmes : {', '.join(data.get('programmes', []))} Modalites_Inscription : {', '.join(data.get('Modalites_Inscription', []))} Perspectives_Carriere : {', '.join(
                         data.get('Perspectives_Carriere', []))} Localisation : {', '.join(data.get('Localisation', []))}" 
                         result = qa_pipeline(question=question, context=context)
-                        if result['score'] > 0.3:
+                        threshold = st.slider("Confidence Threshold", 0.1, 0.9, 0.3, 0.05)
+                        if result['score'] > threshold:
                             return result['answer']
                 def main():
                     st.title("Academic Orientation Bot")
@@ -190,21 +191,14 @@ else:
                         with st.spinner("Searching for an answer..."):
                             answer = answer_question_with_reformulating(school_data, question)
                             st.write("Answer:", answer)
-                if __name__ == "__main__":
                     main()
                             
 
             else:
                 st.write("How do you rate the result of the first diagnostic test")
-                rate = st.selectbox("Rate", ["1", "2", "3", "4", "5"])
+                rate = st.radio("Rate", ["1", "2", "3", "4", "5"])
                 st.button("Go back to the first diagnostic test", on_click=lambda: st.session_state.clear())
                 
-            # What i am gonna do is to make two condionals if it yes then i will add the extra diagnostic questions if it no then i will make a question 
-            # how do u rate the result of the first diagnostic test and i will add a button to go back to the first diagnostic test
-            # for the yes response depends on the answer of the question i will make a diagnostic test to reveal his own speciality in the school he choosed then
-            # the test will end and i will ask him to rate the service and make a comments bar to leave a comment about the service
-            # this is the first service of my platform and i will add the map of the schools in morooco and the contact of the schools
-            # the third service is to make a chatbot in whatssap,telegram that had documentations about the tests to admission to the schools
-            
+           
             
            
