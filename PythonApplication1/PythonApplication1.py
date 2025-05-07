@@ -131,7 +131,7 @@ else:
 
         st.button(t["again"], on_click=lambda: st.session_state.clear())
 
-        st.subheader("\ud83d\udcca Orientation Score Breakdown")
+        st.subheader("📊 Orientation Score Breakdown")
         df = pd.DataFrame(scores.items(), columns=["School", "Score"])
         chart = alt.Chart(df).mark_bar(color="#4e79a7").encode(
             x=alt.X("School", sort="-y"),
@@ -143,17 +143,17 @@ else:
         if "show_extra" not in st.session_state:
             st.session_state.show_extra = False
         if not st.session_state.show_extra:
-            if st.button("\ud83d\udcc4 More Informations:"):
+            if st.button("📄 More Informations:"):
                 st.session_state.show_extra = True
                 st.rerun()
 
         if st.session_state.show_extra:
-            st.subheader("\ud83d\udcc4 More Information Assistant")
+            st.subheader("📄 More Information Assistant")
             st.write("You can now ask any question about the programs like CPGE, ENSA, FMP, etc.")
 
             @st.cache_data
             def load_school_data(json_path="moroccan_higher_education_programs(1).json"):
-                with open(json_path, 'r') as f:
+                with open(json_path, 'r', encoding='utf-8') as f:
                     return json.load(f)
 
             school_data = load_school_data()
