@@ -147,33 +147,78 @@ else:
                 st.session_state.show_extra = True
                 st.rerun()
 
-        if st.session_state.show_extra:
-            st.subheader("📄 More Information Assistant")
-            st.write("You can now ask any question about the programs like CPGE, ENSA, FMP, etc.")
+if st.session_state.show_extra:
+    st.subheader("📄 More Information Assistant")
+    st.write("You can now ask any question about the programs like CPGE, ENSA, FMP, etc.")
 
-            @st.cache_data
-            def load_school_data(json_path="moroccan_higher_education_programs(1).json"):
-                with open(json_path, 'r', encoding='utf-8') as f:
-                    return json.load(f)
+    @st.cache_data
+    def load_school_data(json_path="moroccan_higher_education_programs(1).json"):
+        with open(json_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
 
-            school_data = load_school_data()
-            qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
-            summarizer = pipeline("text2text-generation", model="t5-small")
+    school_data = load_school_data()
 
-            user_question = st.text_input("🧐 Ask a question about the schools")
-            if user_question:
-                with st.spinner("Searching for the best answer..."):
-                    best_answer = None
-                    best_score = 0
-                    for school, data in school_data.items():
-                        context = f"{school}: {data.get('Presentation','')} Programmes : {', '.join(data.get('Programmes', []))} Modalites_Inscription : {data.get('Modalites_Inscription', {}).get('Conditions','')} {data.get('Modalites_Inscription', {}).get('Procedure','')} Perspectives_Carriere : {', '.join(data.get('Perspectives_Carriere', []))}"
-                        result = qa_pipeline(question=user_question, context=context)
-                        if result['score'] > best_score and result['score'] > 0.3:
-                            best_score = result['score']
-                            best_answer = result['answer']
+    # Charger les modèles (en dehors de la boucle !)
+    qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+    summarizer = pipeline("text2text-generation", model="t5-small")
 
-                    if best_answer:
-                        reformulated = summarizer(f"summarize: {best_answer}")[0]['generated_text']
-                        st.success(f"💬 {reformulated}")
-                    else:
-                        st.error("Sorry, I couldn't find a good answer for that question.")
+    user_question = st.text_input("🧐 Ask a question about the schools")
+
+    # Slider du seuil de confiance
+    threshold = st.slider("Confidence Threshold", 0.1, 0.9, 0.3, 0.05)
+
+    if user_question:
+        with st.spinner("🔍 Searching for the best answer..."):
+            best_answer = None
+            best_score = 0
+
+            for school, data in school_data.items():
+                # Construction du contexte dynamique basé sur le vrai JSON
+                presentation = data.get("Presentation", "")
+                localisation = data.get("Localisation", "")
+                
+                # Gérer différents formats de programmes
+                programmes_data = data.get("Programmes", {})
+                if isinstance(programmes_data, dict):
+                    programmes = []
+                    for section, values in programmes_data.items():
+                        if isinstance(values, list):
+                            programmes.extend(values)
+                        else:
+                            programmes.append(f"{section}: {values}")
+                elif isinstance(programmes_data, list):
+                    programmes = programmes_data
+                else:
+                    programmes = [str(programmes_data)]
+
+                programmes_str = ", ".join(programmes)
+
+                # Modalités
+                conditions = data.get("Modalites_Inscription", {}).get("Conditions", "")
+                procedure = data.get("Modalites_Inscription", {}).get("Procedure", "")
+                
+                # Perspectives
+                perspectives = ", ".join(data.get("Perspectives_Carriere", []))
+
+                # Contexte complet
+                context = (
+                    f"{school} - {presentation}\n"
+                    f"Localisation : {localisation}\n"
+                    f"Programmes : {programmes_str}\n"
+                    f"Conditions d'inscription : {conditions}\n"
+                    f"Procédure d'inscription : {procedure}\n"
+                    f"Débouchés : {perspectives}"
+                )
+
+                # Obtenir réponse
+                result = qa_pipeline(question=user_question, context=context)
+
+                if result['score'] > best_score and result['score'] > threshold:
+                    best_score = result['score']
+                    best_answer = result['answer']
+
+            if best_answer:
+                reformulated = summarizer(f"summarize: {best_answer}")[0]['generated_text']
+                st.success(f"💬 {reformulated}")
+            else:
+                st.error("❌ Sorry, I couldn't find a good answer for that question.")
