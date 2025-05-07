@@ -1,2 +1,6 @@
 streamlit
-openai>=1.0.0
+pandas
+altair
+transformers
+torch
+sentencepiece
