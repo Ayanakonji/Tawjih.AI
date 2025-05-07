@@ -179,8 +179,7 @@ else:
                         context = f"{school}: {data.get('Presentation','')} Programmes : {', '.join(data.get('programmes', []))} Modalites_Inscription : {', '.join(data.get('Modalites_Inscription', []))} Perspectives_Carriere : {', '.join(
                         data.get('Perspectives_Carriere', []))} Localisation : {', '.join(data.get('Localisation', []))}" 
                         result = qa_pipeline(question=question, context=context)
-                        threshold = st.slider("Confidence Threshold", 0.1, 0.9, 0.3, 0.05)
-                        if result['score'] > threshold:
+                        if result['score'] > 0.3:
                             return result['answer']
                 def main():
                     st.title("Academic Orientation Bot")
