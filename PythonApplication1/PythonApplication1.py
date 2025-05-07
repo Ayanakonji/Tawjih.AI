@@ -152,7 +152,7 @@ else:
             st.write("You can now ask any question about the programs like CPGE, ENSA, FMP, etc.")
 
             @st.cache_data
-            def load_school_data(json_path="C:\Users\user\source\repos\PythonApplication1\PythonApplication1\moroccan_higher_education_programs(1).json"):
+            def load_school_data(json_path="moroccan_higher_education_programs(1).json"):
                 with open(json_path, 'r', encoding='utf-8') as f:
                     return json.load(f)
 
