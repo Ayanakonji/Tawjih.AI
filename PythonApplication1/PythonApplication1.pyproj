@@ -25,6 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".streamlit\secrets.toml" />
+    <Content Include="moroccan_higher_education_programs%281%29.json" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include=".streamlit\" />

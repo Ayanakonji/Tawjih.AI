@@ -1,6 +1,9 @@
 ﻿import streamlit as st
 import pandas as pd
 import altair as alt
+import json
+from transformers import pipeline
+import sys
 
 st.set_page_config(page_title="Academic Orientation Bot", layout="centered")
 st.title("🎓 AI Academic Orientation Advisor")
@@ -115,7 +118,6 @@ else:
                 case "Physics": scores["CPGE"] += 2; scores["ENSA"] += 2; scores["ENSAM"] += 2
                 case "Biology": scores["FMP"] += 3; scores["IAV"] += 3
                 case "Economics": scores["ENCG"] += 3
-                case "Engineering": scores["ENSA"] += 3; scores["ENSAM"] += 3
                 case "Agriculture": scores["IAV"] += 3
 
             match ans["career"]:
@@ -159,8 +161,43 @@ else:
             st.subheader("More Informations:")
             st.write("Agree to know more informations to deeply know about your choice, if you are then select yes, if it isn't then select no")
             more_information = st.radio("Do you want to know more informations about your choices", ["Yes", "No"])
+            if more_information == "Yes":
+                qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad", tokenizer="distilbert-base-cased-distilled-squad")
+                summarizer = pipeline("text2text-generation", model="t5-small", tokenizer="t5-small")  # Utilisation de T5 pour reformuler
+                # Load the JSON file
+                def load_school_data(json_path):
+                    with open(json_path, 'r', encoding='utf-8') as f:
+                        return json.load(f)
 
-                
+                def reformulate_answer(answer):
+                    input_text = f"summarize: {answer}"
+                    result = summarizer(input_text)
+                    return result[0]['generated_text']
+                def answer_question_with_reformulating(school_data,question):
+                    for school, data in school_data.items():
+                        # Reformulate the text
+                        context = f"{school}: {data.get('Presentation','')} Programmes : {', '.join(data.get('programmes', []))} Modalites_Inscription : {', '.join(data.get('Modalites_Inscription', []))} Perspectives_Carriere : {', '.join(
+                        data.get('Perspectives_Carriere', []))} Localisation : {', '.join(data.get('Localisation', []))}" 
+                        result = qa_pipeline(question=question, context=context)
+                        if result['score'] > 0.3:
+                            return result['answer']
+                def main():
+                    st.title("Academic Orientation Bot")
+                    json_path = "moroccan_higher_education_programs(1).json"
+                    school_data = load_school_data(json_path)
+                    question = st.text_input("Ask a question about the schools","")
+                    if question:
+                        with st.spinner("Searching for an answer..."):
+                            answer = answer_question_with_reformulating(school_data, question)
+                            st.write("Answer:", answer)
+                if __name__ == "__main__":
+                    main()
+                            
+
+            else:
+                st.write("How do you rate the result of the first diagnostic test")
+                rate = st.selectbox("Rate", ["1", "2", "3", "4", "5"])
+                st.button("Go back to the first diagnostic test", on_click=lambda: st.session_state.clear())
                 
             # What i am gonna do is to make two condionals if it yes then i will add the extra diagnostic questions if it no then i will make a question 
             # how do u rate the result of the first diagnostic test and i will add a button to go back to the first diagnostic test

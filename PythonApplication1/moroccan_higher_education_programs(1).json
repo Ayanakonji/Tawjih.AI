@@ -1,0 +1,155 @@
+{
+    "CPGE": {
+        "Programmes": [
+            "MPSI",
+            "PCSI",
+            "TSI",
+            "ECT/ECS"
+        ],
+        "Modalites_Inscription": {
+            "Conditions": "Nationalité marocaine, âge < 21 ans, Bac scientifique ou technique avec mention",
+            "Procedure": "Préinscription en ligne, validation de la candidature"
+        },
+        "Perspectives_Carriere": [
+            "Écoles d'ingénieurs",
+            "Écoles de commerce",
+            "Recherche",
+            "Enseignement"
+        ],
+        "Localisation": "Présentes dans plusieurs lycées publics et privés à travers le Maroc (ex: Lycée Mohammed V à Rabat, Lycée Moulay Youssef à Rabat, etc.)",
+        "Presentation": "Les CPGE sont des classes intensives préparant aux concours d’entrée aux grandes écoles d’ingénieurs, de commerce ou de lettres."
+    },
+    "ENSA": {
+        "Programmes": [
+            "Génie Informatique",
+            "Génie Industriel",
+            "Génie Civil",
+            "Génie Électrique",
+            "Génie Mécanique",
+            "Génie des Procédés de l'Énergie et de l'Environnement",
+            "Génie Télécommunication et Réseaux",
+            "Génie Mécatronique"
+        ],
+        "Modalites_Inscription": {
+            "Conditions": "Baccalauréat scientifique ou technique",
+            "Procedure": "Préinscription en ligne, sélection sur notes du Bac"
+        },
+        "Perspectives_Carriere": [
+            "Postes d’ingénieurs dans divers secteurs industriels et technologiques"
+        ],
+        "Localisation": "Réseau de 11 ENSA au Maroc (Agadir, Fès, Tanger, Tétouan, Kénitra, Oujda, El Jadida, Safi, Al Hoceima, Marrakech, Khouribga)",
+        "Presentation": "Les ENSA forment des ingénieurs polyvalents dans divers domaines techniques avec une approche professionnalisante."
+    },
+    "ENSAM": {
+        "Programmes": [
+            "Génie biomédical",
+            "Génie Industriel et Technologie Numérique",
+            "Génie mécanique",
+            "Génie des Matériaux, Qualité et Environnement",
+            "Énergie Électrique et Industrie Numérique",
+            "Génie mécanique pour l'industrie aéronautique",
+            "Industrie Numérique, Data et IA",
+            "Ingénierie des Systèmes Énergétiques"
+        ],
+        "Modalites_Inscription": {
+            "Conditions": "Baccalauréat scientifique ou technique",
+            "Procedure": "Préinscription en ligne, sélection sur notes du Bac"
+        },
+        "Perspectives_Carriere": [
+            "Ingénierie mécanique",
+            "Électrique",
+            "Industrielle",
+            "Aéronautique",
+            "Numérique"
+        ],
+        "Localisation": "Présentes à Casablanca et Meknès",
+        "Presentation": "Les ENSAM sont spécialisées dans la formation d’ingénieurs en génie mécanique, industriel et numérique."
+    },
+    "ENCG": {
+        "Programmes": {
+            "Gestion": [
+                "Gestion financière et comptable",
+                "Audit et Contrôle de Gestion",
+                "Management des Ressources Humaines",
+                "Management de la logistique"
+            ],
+            "Commerce": [
+                "Marketing et action commerciale",
+                "Publicité et Communication",
+                "Commerce international",
+                "Management de la relation Client"
+            ]
+        },
+        "Modalites_Inscription": {
+            "Conditions": "Baccalauréat habilité (scientifique, économique, etc.)",
+            "Procedure": "Concours national TAFEM (présélection + épreuve écrite)"
+        },
+        "Perspectives_Carriere": [
+            "Finance",
+            "Audit",
+            "Marketing",
+            "RH",
+            "Logistique",
+            "Commerce international"
+        ],
+        "Localisation": "11 établissements à travers le Maroc : Casablanca, Marrakech, Agadir, Settat, El Jadida, Fès, Oujda, Kénitra, Dakhla, Tanger, Laâyoune",
+        "Presentation": "Les ENCG forment des cadres en commerce et gestion avec des spécialisations en marketing, finance, audit et logistique."
+    },
+    "FMP": {
+        "Programmes": {
+            "Médecine": "7 ans avec stages hospitaliers",
+            "Pharmacie": "6 ans avec stages en officine et industrie"
+        },
+        "Modalites_Inscription": {
+            "Conditions": "Baccalauréat scientifique avec mention",
+            "Procedure": "Concours écrit en sciences"
+        },
+        "Perspectives_Carriere": [
+            "Médecin généraliste",
+            "Spécialiste",
+            "Pharmacien",
+            "Chercheur",
+            "Enseignant"
+        ],
+        "Localisation": "Facultés à Rabat, Casablanca, Fès, Marrakech, Oujda, Agadir, Tanger, et Laâyoune",
+        "Presentation": "Les FMP forment des médecins et pharmaciens à travers un parcours long, scientifique et pratique."
+    },
+    "IAV": {
+        "Programmes": {
+            "Cycle préparatoire": "1 an (APESA)",
+            "Cycle ingénieur": [
+                "Productions Végétales",
+                "Génétique des Semences",
+                "Écosystèmes Forestiers",
+                "Ressources en Sol et Eau",
+                "Production Animale",
+                "Horticulture",
+                "Protection des Plantes",
+                "Architecture du Paysage",
+                "Halieutique & Aquaculture"
+            ],
+            "Médecine vétérinaire": "6 ans",
+            "Masters": [
+                "Biotechnologie",
+                "Gestion de l'eau",
+                "Environnement"
+            ],
+            "Doctorat": "3 à 5 ans"
+        },
+        "Modalites_Inscription": {
+            "Conditions": "Baccalauréat scientifique avec mention",
+            "Procedure": "Sélection sur dossier + concours écrit et oral"
+        },
+        "Perspectives_Carriere": [
+            "Agriculture",
+            "Agroalimentaire",
+            "Environnement",
+            "Ressources naturelles",
+            "Médecine vétérinaire",
+            "Recherche",
+            "Enseignement"
+        ],
+        "Localisation": "Rabat",
+        "Presentation": "L’Institut Agronomique et Vétérinaire Hassan II est une référence nationale pour la formation en agronomie, médecine vétérinaire et environnement."
+    }
+}
