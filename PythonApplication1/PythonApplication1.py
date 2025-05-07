@@ -118,18 +118,18 @@ else:
                 case "Engineering": scores["ENSA"] += 3; scores["ENSAM"] += 3
                 case "Agriculture": scores["IAV"] += 3
 
-        match ans["career"]:
-            case "Engineer": scores["ENSA"] += 3; scores["ENSAM"] += 3; scores["CPGE"] += 2
-            case "Doctor/Pharmacist": scores["FMP"] += 3
-            case "Business Executive": scores["ENCG"] += 3
-            case "Veterinary Expert": scores["IAV"] += 3
-            case "Technician": scores["ENSAM"] += 2; scores["ENSA"] += 2
+            match ans["career"]:
+                case "Engineer": scores["ENSA"] += 3; scores["ENSAM"] += 3; scores["CPGE"] += 2
+                case "Doctor/Pharmacist": scores["FMP"] += 3
+                case "Business Executive": scores["ENCG"] += 3
+                case "Veterinary Expert": scores["IAV"] += 3
+                case "Technician": scores["ENSAM"] += 2; scores["ENSA"] += 2
 
-        match ans["program_type"]:
-            case "Competitive and theory-based": scores["CPGE"] += 3; scores["ENSA"] += 2; scores["ENSAM"] += 2
-            case "Hands-on and technical": scores["ENSAM"] += 2; scores["ENSA"] += 2
-            case "Balanced academic + practical": scores["IAV"] += 2; scores["FMP"] += 1
-            case "Specialized/professional": scores["IAV"] += 2; scores["FMP"] += 2
+            match ans["program_type"]:
+                case "Competitive and theory-based": scores["CPGE"] += 3; scores["ENSA"] += 2; scores["ENSAM"] += 2
+                case "Hands-on and technical": scores["ENSAM"] += 2; scores["ENSA"] += 2
+                case "Balanced academic + practical": scores["IAV"] += 2; scores["FMP"] += 1
+                case "Specialized/professional": scores["IAV"] += 2; scores["FMP"] += 2
 
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         total = max(sum(scores.values()), 1)
@@ -171,7 +171,5 @@ else:
             # this is the first service of my platform and i will add the map of the schools in morooco and the contact of the schools
             # the third service is to make a chatbot in whatssap,telegram that had documentations about the tests to admission to the schools
             
-                with st.form("extra_diagnostic_form"):
-                     # Add extra diagnostic questions here
             
            
