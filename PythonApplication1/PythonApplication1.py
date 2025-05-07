@@ -162,143 +162,119 @@ else:
             st.write("Agree to know more informations to deeply know about your choice, if you are then select yes, if it isn't then select no")
             more_information = st.radio("Do you want to know more informations about your choices", ["Yes", "No"])
             if more_information == "Yes":
-            # Load the JSON file
+                # Load JSON data
                 with open("moroccan_higher_education_programs(1).json", "r", encoding="utf-8") as f:
                     data = json.load(f)
-            st.title("🤖 Academic Orientation Chatbot")
-            st.write("Posez votre question sur les écoles supérieures marocaines (FR/AR/EN)")
+                st.title("🎓 Moroccan Academic Orientation Chatbot")
+                st.write("Posez une question sur un établissement marocain (FR/AR/EN).")
 
-            if "chat_history" not in st.session_state:
-                st.session_state.chat_history = []
+                if "chat_history" not in st.session_state:
+                    st.session_state.chat_history = []
 
-            # Detect institution
-            def find_institution(user_input):
-                for name in data:
-                    if re.search(rf"\b{name}\b", user_input, re.IGNORECASE):
-                        return name
-                return None
+                # Detect language
+                def detect_language(text):
+                    try:
+                        return detect(text)
+                    except:
+                        return "en"
 
-            # Detect language
-            def detect_language(text):
-                try:
-                    return detect(text)
-                except:
-                    return "en"
+                # Identify institution
+                def find_institution(text):
+                    for name in data:
+                        if re.search(rf"\b{name}\b", text, re.IGNORECASE):
+                            return name
+                    return None
 
-            # Response builder
-            def get_response(user_input, lang):
-                institution = find_institution(user_input)
-                if not institution:
-                    return {
-                        "en": "❓ I couldn't identify the institution. Try 'ENSA', 'FMP', etc.",
-                        "fr": "❓ Je n’ai pas reconnu l’établissement. Essayez avec ‘ENSA’, ‘FMP’, etc.",
-                        "ar": "❓ لم أتمكن من تحديد المؤسسة. جرب استخدام أسماء مثل 'ENSA' أو 'FMP'."
-                    }.get(lang, "Sorry, I couldn’t understand.")
+                # Identify requested section/topic
+                def find_topic(text):
+                    text = text.lower()
+                    if re.search(r"\b(program|programme|programmes|برامج|تخصصات)\b", text):
+                        return "Programmes"
+                    elif re.search(r"\b(admission|inscription|modalité|modalites|شروط|ولوج)\b", text):
+                        return "Modalites_Inscription"
+                    elif re.search(r"\b(carrière|career|débou|perspectives|فرص|وظائف)\b", text):
+                        return "Perspectives_Carriere"
+                    elif re.search(r"\b(localisation|location|où|اين)\b", text):
+                        return "Localisation"
+                    elif re.search(r"\b(présentation|presentation|مقدمة|تعريف)\b", text):
+                        return "Presentation"
+                    else:
+                        return None
+
+                # Format each section
+                def format_section(info, topic, lang):
+                    if topic == "Programmes":
+                        prog = info.get("Programmes")
+                        if not prog:
+                            return "❌ Aucune information disponible."
+                        response = f"**📚 Programmes :**\n"
+                        if isinstance(prog, list):
+                            response += "\n".join(f"- {p}" for p in prog)
+                        elif isinstance(prog, dict):
+                            for cat, items in prog.items():
+                                response += f"\n**{cat}**\n"
+                                if isinstance(items, list):
+                                    response += "\n".join(f"- {i}" for i in items) + "\n"
+                                else:
+                                    response += f"- {items}\n"
+                        return response
+
+                    elif topic == "Modalites_Inscription":
+                        m = info.get("Modalites_Inscription", {})
+                        return f"**📝 Admission :**\n- Conditions : {m.get('Conditions', 'N/A')}\n- Procédure : {m.get('Procedure', 'N/A')}"
+
+                    elif topic == "Perspectives_Carriere":
+                        careers = info.get("Perspectives_Carriere", [])
+                        return "**💼 Débouchés :**\n" + "\n".join(f"- {c}" for c in careers)
+
+                    elif topic == "Localisation":
+                        return f"**📍 Localisation :** {info.get('Localisation', 'Non spécifiée')}"
+
+                    elif topic == "Presentation":
+                        return f"**📘 Présentation :**\n{info.get('Presentation', 'N/A')}"
+
+                    else:
+                        return "❓ Veuillez préciser si vous voulez les programmes, l’admission, la présentation, etc."
+
+                # Main response generator
+                def get_response(user_input, lang):
+                    institution = find_institution(user_input)
+                    topic = find_topic(user_input)
+
+                    if not institution:
+                        return {
+                            "fr": "❓ Je n’ai pas reconnu l’établissement. Essayez avec ‘ENSA’, ‘FMP’, etc.",
+                            "ar": "❓ لم أتمكن من تحديد المؤسسة. جرب استخدام أسماء مثل 'ENSA' أو 'FMP'.",
+                            "en": "❓ I couldn't identify the institution. Try 'ENSA', 'FMP', etc."
+                        }.get(lang, "❓ Institution not found.")
+
+                    info = data[institution]
     
-                info = data[institution]
-    
-                if lang == "fr":
-                    response = f"🏫 **{institution}**\n\n"
-                    response += f"📘 *{info.get('Presentation', '')}*\n\n"
+                    if topic:
+                        return format_section(info, topic, lang)
+                    else:
+                        return {
+                            "fr": f"❓ Vous avez mentionné **{institution}**. Souhaitez-vous connaître ses *programmes*, *modalités d’admission*, *localisation* ou *débouchés* ?",
+                            "ar": f"❓ لقد ذكرت **{institution}**. هل ترغب في معرفة *البرامج*، *شروط القبول*، *الموقع*، أو *آفاق العمل*؟",
+                            "en": f"❓ You mentioned **{institution}**. Would you like to know about its *programs*, *admission*, *location*, or *careers*?"
+                        }.get(lang, "Please clarify your question.")
 
-                    # Programmes
-                    response += "**📚 Programmes :**\n"
-                    prog = info.get("Programmes")
-                    if isinstance(prog, list):
-                        response += "\n".join(f"- {p}" for p in prog)
-                    elif isinstance(prog, dict):
-                        for cat, items in prog.items():
-                            response += f"**{cat}**\n"
-                            if isinstance(items, list):
-                                response += "\n".join(f"- {i}" for i in items) + "\n"
-                            else:
-                                response += f"- {items}\n"
+                # Input box
+                st.chat_message("assistant").markdown("💬 Exemple : _Quelles sont les spécialités de l’ENCG ?_")
 
-                    modalites = info.get("Modalites_Inscription", {})
-                    response += f"\n**📝 Admission :**\n- Conditions : {modalites.get('Conditions', '')}\n- Procédure : {modalites.get('Procedure', '')}\n"
+                user_input = st.chat_input("Posez votre question ici...")
+                if user_input:
+                    lang = detect_language(user_input)
+                    response = get_response(user_input, lang)
 
-                    careers = info.get("Perspectives_Carriere", [])
-                    if careers:
-                        response += "\n**💼 Débouchés :**\n" + "\n".join(f"- {c}" for c in careers)
+                    st.session_state.chat_history.append(("user", user_input))
+                    st.session_state.chat_history.append(("bot", response))
 
-                    response += f"\n\n**📍 Localisation :** {info.get('Localisation', '')}"
-                    return response
-
-                elif lang == "ar":
-                    response = f"🏫 **{institution}**\n\n"
-                    response += f"📘 {info.get('Presentation', '')}\n\n"
-
-                    response += "**📚 البرامج:**\n"
-                    prog = info.get("Programmes")
-                    if isinstance(prog, list):
-                        response += "\n".join(f"- {p}" for p in prog)
-                    elif isinstance(prog, dict):
-                        for cat, items in prog.items():
-                            response += f"**{cat}**\n"
-                            if isinstance(items, list):
-                                response += "\n".join(f"- {i}" for i in items) + "\n"
-                            else:
-                                response += f"- {items}\n"
-
-                    modalites = info.get("Modalites_Inscription", {})
-                    response += f"\n**📝 شروط القبول:**\n- الشروط: {modalites.get('Conditions', '')}\n- الإجراءات: {modalites.get('Procedure', '')}\n"
-
-                    careers = info.get("Perspectives_Carriere", [])
-                    if careers:
-                        response += "\n**💼 الآفاق المهنية:**\n" + "\n".join(f"- {c}" for c in careers)
-
-                    response += f"\n\n**📍 المكان:** {info.get('Localisation', '')}"
-                    return response
-
-                else:  # English fallback
-                    response = f"🏫 **{institution}**\n\n"
-                    response += f"📘 *{info.get('Presentation', '')}*\n\n"
-                    response += "**📚 Programs:**\n"
-                    prog = info.get("Programmes")
-                    if isinstance(prog, list):
-                        response += "\n".join(f"- {p}" for p in prog)
-                    elif isinstance(prog, dict):
-                        for cat, items in prog.items():
-                            response += f"**{cat}**\n"
-                            if isinstance(items, list):
-                                response += "\n".join(f"- {i}" for i in items) + "\n"
-                            else:
-                                response += f"- {items}\n"
-
-                    modalites = info.get("Modalites_Inscription", {})
-                    response += f"\n**📝 Admission:**\n- Conditions: {modalites.get('Conditions', '')}\n- Procedure: {modalites.get('Procedure', '')}\n"
-
-                    careers = info.get("Perspectives_Carriere", [])
-                    if careers:
-                        response += "\n**💼 Career Opportunities:**\n" + "\n".join(f"- {c}" for c in careers)
-
-                    response += f"\n\n**📍 Location:** {info.get('Localisation', '')}"
-                    return response
-
-            # Input area
-            st.chat_message("assistant").markdown("👋 Bonjour ! Posez une question comme : _“Qu’est-ce que l’ENCG ?”_ ou _“What can I study at ENSAM?”_")
-
-            user_input = st.chat_input("Tapez votre question ici...")
-
-            if user_input:
-                lang = detect_language(user_input)
-                response = get_response(user_input, lang)
-
-                # Save and show user message
-                st.session_state.chat_history.append(("user", user_input))
-                with st.chat_message("user", avatar="🧑"):
-                    st.markdown(user_input)
-
-                # Save and show bot response
-                st.session_state.chat_history.append(("bot", response))
-                with st.chat_message("assistant", avatar="🎓"):
-                    st.markdown(response)
-
-            # Show past chat
-            for role, msg in st.session_state.chat_history:
-                avatar = "🧑" if role == "user" else "🎓"
-                with st.chat_message(role, avatar=avatar):
-                    st.markdown(msg)
+                # Display full chat history
+                for role, msg in st.session_state.chat_history:
+                    avatar = "🧑" if role == "user" else "🎓"
+                    with st.chat_message(role, avatar=avatar):
+                        st.markdown(msg)
 
                             
 
