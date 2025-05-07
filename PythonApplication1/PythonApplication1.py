@@ -3,17 +3,16 @@ import pandas as pd
 import altair as alt
 import json
 from transformers import pipeline
-import sys
 
 st.set_page_config(page_title="Academic Orientation Bot", layout="centered")
-st.title("🎓 AI Academic Orientation Advisor")
+st.title("\U0001F393 AI Academic Orientation Advisor")
 
 # Step 1: Language selection
 if "lang" not in st.session_state:
-    lang = st.selectbox("🌐 Choose your language / Choisissez votre langue / اختر اللغة", ["English", "Français", "العربية"])
+    lang = st.selectbox("\U0001F310 Choose your language / Choisissez votre langue / اختر اللغة", ["English", "Français", "العربية"])
     if st.button("✅ Continue"):
         st.session_state.lang = lang
-        st.session_state.submitted = False  # Reset any previous form submission
+        st.session_state.submitted = False
         st.rerun()
 else:
     lang = st.session_state.lang
@@ -64,7 +63,7 @@ else:
             name = st.text_input(t["name"])
             city = st.text_input(t["city"])
             track = st.selectbox(t["track"], ["Physics", "Math", "Economics","Life and Earth Science"])
-            average = st.selectbox(t["average"], ["≥ 16", "14–15.99", "12–13.99", "10-11.99"])
+            average = st.selectbox(t["average"], ["\u2265 16", "14–15.99", "12–13.99", "10-11.99"])
             fav_subjects = st.multiselect(t["subjects"], ["Mathematics", "Physics", "Biology", "Economics", "Agriculture"])
             career = st.selectbox(t["career"], ["Engineer", "Doctor/Pharmacist", "Business Executive", "Veterinary Expert", "Technician"])
             program_type = st.selectbox(t["program"], ["Competitive and theory-based", "Hands-on and technical", "Balanced academic + practical", "Specialized/professional"])
@@ -84,19 +83,10 @@ else:
     else:
         st.subheader(t["result"])
 
-        # Score System
-        scores = {
-            "CPGE": 0,
-            "ENSA": 0,
-            "ENSAM": 0,
-            "IAV": 0,
-            "FMP": 0,
-            "ENCG": 0
-        }
-
+        scores = {"CPGE": 0, "ENSA": 0, "ENSAM": 0, "IAV": 0, "FMP": 0, "ENCG": 0}
         ans = st.session_state.answers
 
-        if ans["average"] == "≥ 16":
+        if ans["average"] == "\u2265 16":
             for k in scores: scores[k] += 3
         elif ans["average"] == "14–15.99":
             scores.update({"CPGE": 2, "FMP": 3, "ENSA": 2, "ENSAM": 2, "ENCG": 3, "IAV": 3})
@@ -120,18 +110,18 @@ else:
                 case "Economics": scores["ENCG"] += 3
                 case "Agriculture": scores["IAV"] += 3
 
-            match ans["career"]:
-                case "Engineer": scores["ENSA"] += 3; scores["ENSAM"] += 3; scores["CPGE"] += 2
-                case "Doctor/Pharmacist": scores["FMP"] += 3
-                case "Business Executive": scores["ENCG"] += 3
-                case "Veterinary Expert": scores["IAV"] += 3
-                case "Technician": scores["ENSAM"] += 2; scores["ENSA"] += 2
+        match ans["career"]:
+            case "Engineer": scores["ENSA"] += 3; scores["ENSAM"] += 3; scores["CPGE"] += 2
+            case "Doctor/Pharmacist": scores["FMP"] += 3
+            case "Business Executive": scores["ENCG"] += 3
+            case "Veterinary Expert": scores["IAV"] += 3
+            case "Technician": scores["ENSAM"] += 2; scores["ENSA"] += 2
 
-            match ans["program_type"]:
-                case "Competitive and theory-based": scores["CPGE"] += 3; scores["ENSA"] += 2; scores["ENSAM"] += 2
-                case "Hands-on and technical": scores["ENSAM"] += 2; scores["ENSA"] += 2
-                case "Balanced academic + practical": scores["IAV"] += 2; scores["FMP"] += 1
-                case "Specialized/professional": scores["IAV"] += 2; scores["FMP"] += 2
+        match ans["program_type"]:
+            case "Competitive and theory-based": scores["CPGE"] += 3; scores["ENSA"] += 2; scores["ENSAM"] += 2
+            case "Hands-on and technical": scores["ENSAM"] += 2; scores["ENSA"] += 2
+            case "Balanced academic + practical": scores["IAV"] += 2; scores["FMP"] += 1
+            case "Specialized/professional": scores["IAV"] += 2; scores["FMP"] += 2
 
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         total = max(sum(scores.values()), 1)
@@ -141,8 +131,7 @@ else:
 
         st.button(t["again"], on_click=lambda: st.session_state.clear())
 
-        # Display the scores in a bar chart
-        st.subheader("📈 Orientation Score Breakdown")
+        st.subheader("\ud83d\udcca Orientation Score Breakdown")
         df = pd.DataFrame(scores.items(), columns=["School", "Score"])
         chart = alt.Chart(df).mark_bar(color="#4e79a7").encode(
             x=alt.X("School", sort="-y"),
@@ -150,55 +139,41 @@ else:
             tooltip=["School", "Score"]
         ).properties(width=600, height=400)
         st.altair_chart(chart, use_container_width=True)
-        # Add a button to show extra diagnostic
+
         if "show_extra" not in st.session_state:
             st.session_state.show_extra = False
         if not st.session_state.show_extra:
-            if st.button("📄 More Informations:"):
+            if st.button("\ud83d\udcc4 More Informations:"):
                 st.session_state.show_extra = True
                 st.rerun()
+
         if st.session_state.show_extra:
-            st.subheader("More Informations:")
-            st.write("Agree to know more informations to deeply know about your choice, if you are then select yes, if it isn't then select no")
-            more_information = st.radio("Do you want to know more informations about your choices", ["Yes", "No"])
-            if more_information == "Yes":
-                qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad", tokenizer="distilbert-base-cased-distilled-squad")
-                summarizer = pipeline("text2text-generation", model="t5-small", tokenizer="t5-small")  # Utilisation de T5 pour reformuler
-                # Load the JSON file
-                def load_school_data(json_path):
-                    with open(json_path, 'r', encoding='utf-8') as f:
-                        return json.load(f)
+            st.subheader("\ud83d\udcc4 More Information Assistant")
+            st.write("You can now ask any question about the programs like CPGE, ENSA, FMP, etc.")
 
-                def reformulate_answer(answer):
-                    input_text = f"paraphrase: {answer}"
-                    result = summarizer(input_text)
-                    return result[0]['generated_text']
-                def answer_question_with_reformulating(school_data,question):
+            @st.cache_data
+            def load_school_data(json_path="moroccan_higher_education_programs(1).json"):
+                with open(json_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+
+            school_data = load_school_data()
+            qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+            summarizer = pipeline("text2text-generation", model="t5-small")
+
+            user_question = st.text_input("🧐 Ask a question about the schools")
+            if user_question:
+                with st.spinner("Searching for the best answer..."):
+                    best_answer = None
+                    best_score = 0
                     for school, data in school_data.items():
-                        # Reformulate the text
-                        context = f"{school}: {data.get('Presentation','')} Programmes : {', '.join(data.get('programmes', []))} Modalites_Inscription : {', '.join(data.get('Modalites_Inscription', []))} Perspectives_Carriere : {', '.join(
-                        data.get('Perspectives_Carriere', []))} Localisation : {', '.join(data.get('Localisation', []))}" 
-                        result = qa_pipeline(question=question, context=context)
-                        threshold = st.slider("Confidence Threshold", 0.1, 0.9, 0.3, 0.05)
-                        if result['score'] > threshold:
-                            return result['answer']
-                def main():
-                    st.title("Academic Orientation Bot")
-                    json_path = "moroccan_higher_education_programs(1).json"
-                    school_data = load_school_data(json_path)
-                    question = st.text_input("Ask a question about the schools","")
-                    if question:
-                        with st.spinner("Searching for an answer..."):
-                            answer = answer_question_with_reformulating(school_data, question)
-                            st.write("Answer:", answer)
-                    main()
-                            
+                        context = f"{school}: {data.get('Presentation','')} Programmes : {', '.join(data.get('Programmes', []))} Modalites_Inscription : {data.get('Modalites_Inscription', {}).get('Conditions','')} {data.get('Modalites_Inscription', {}).get('Procedure','')} Perspectives_Carriere : {', '.join(data.get('Perspectives_Carriere', []))}"
+                        result = qa_pipeline(question=user_question, context=context)
+                        if result['score'] > best_score and result['score'] > 0.3:
+                            best_score = result['score']
+                            best_answer = result['answer']
 
-            else:
-                st.write("How do you rate the result of the first diagnostic test")
-                rate = st.radio("Rate", ["1", "2", "3", "4", "5"])
-                st.button("Go back to the first diagnostic test", on_click=lambda: st.session_state.clear())
-                
-           
-            
-           
+                    if best_answer:
+                        reformulated = summarizer(f"summarize: {best_answer}")[0]['generated_text']
+                        st.success(f"💬 {reformulated}")
+                    else:
+                        st.error("Sorry, I couldn't find a good answer for that question.")
