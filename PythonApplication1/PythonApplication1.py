@@ -152,18 +152,16 @@ else:
         if "show_extra" not in st.session_state:
             st.session_state.show_extra = False
         if not st.session_state.show_extra:
-            if st.button("📄 Take Additional Diagnostic Test"):
+            if st.button("📄 More Informations:"):
                 st.session_state.show_extra = True
                 st.rerun()
         if st.session_state.show_extra:
-            st.subheader("🔍 Extra Diagnostic")
-            st.write("This is an additional diagnostic test to help you find the best orientation.")
-            st.write("Based on the statistics , the best school choice is :", sorted_scores[0][0])
-            st.write("Agree to take an additional to deeply know about your choice, if you are then select yes, if it isn't then select no")
-            extra_diagnostic = st.radio("Do you want to take the additional diagnostic test?", ["Yes", "No"])
-            if extra_diagnostic == "Yes":
-                st.write("Great! Let's start the additional diagnostic test.")
-
+            st.subheader("More Informations:")
+            st.write("Agree to know more informations to deeply know about your choice, if you are then select yes, if it isn't then select no")
+            more_information = st.radio("Do you want to know more informations about your choices", ["Yes", "No"])
+            if more_information == "Yes":
+                
+                
             # What i am gonna do is to make two condionals if it yes then i will add the extra diagnostic questions if it no then i will make a question 
             # how do u rate the result of the first diagnostic test and i will add a button to go back to the first diagnostic test
             # for the yes response depends on the answer of the question i will make a diagnostic test to reveal his own speciality in the school he choosed then
