@@ -131,7 +131,7 @@ else:
 
         st.button(t["again"], on_click=lambda: st.session_state.clear())
 
-        st.subheader("\ud83d\udcca Orientation Score Breakdown")
+        st.subheader("📊 Orientation Score Breakdown")
         df = pd.DataFrame(scores.items(), columns=["School", "Score"])
         chart = alt.Chart(df).mark_bar(color="#4e79a7").encode(
             x=alt.X("School", sort="-y"),
@@ -143,7 +143,7 @@ else:
         if "show_extra" not in st.session_state:
             st.session_state.show_extra = False
         if not st.session_state.show_extra:
-            if st.button("\ud83d\udcc4 More Informations:"):
+            if st.button("📄 More Informations:"):
                 st.session_state.show_extra = True
                 st.rerun()
 
