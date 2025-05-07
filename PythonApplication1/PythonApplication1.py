@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 import json
 from transformers import pipeline
-import sys
+import re
 
 st.set_page_config(page_title="Academic Orientation Bot", layout="centered")
 st.title("🎓 AI Academic Orientation Advisor")
@@ -162,36 +162,147 @@ else:
             st.write("Agree to know more informations to deeply know about your choice, if you are then select yes, if it isn't then select no")
             more_information = st.radio("Do you want to know more informations about your choices", ["Yes", "No"])
             if more_information == "Yes":
-                qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad", tokenizer="distilbert-base-cased-distilled-squad")
-                summarizer = pipeline("text2text-generation", model="t5-small", tokenizer="t5-small")  # Utilisation de T5 pour reformuler
-                # Load the JSON file
-                def load_school_data(json_path):
-                    with open(json_path, 'r', encoding='utf-8') as f:
-                        return json.load(f)
+            # Load the JSON file
+                with open("moroccan_higher_education_programs(1).json", "r", encoding="utf-8") as f:
+                    data = json.load(f)
 
-                def reformulate_answer(answer):
-                    input_text = f"summarize: {answer}"
-                    result = summarizer(input_text)
-                    return result[0]['generated_text']
-                def answer_question_with_reformulating(school_data,question):
-                    for school, data in school_data.items():
-                        # Reformulate the text
-                        context = f"{school}: {data.get('Presentation','')} Programmes : {', '.join(data.get('programmes', []))} Modalites_Inscription : {', '.join(data.get('Modalites_Inscription', []))} Perspectives_Carriere : {', '.join(
-                        data.get('Perspectives_Carriere', []))} Localisation : {', '.join(data.get('Localisation', []))}" 
-                        result = qa_pipeline(question=question, context=context)
-                        if result['score'] > 0.3:
-                            return result['answer']
-                def main():
-                    st.title("Academic Orientation Bot")
-                    json_path = "moroccan_higher_education_programs(1).json"
-                    school_data = load_school_data(json_path)
-                    question = st.text_input("Ask a question about the schools","")
-                    if question:
-                        with st.spinner("Searching for an answer..."):
-                            answer = answer_question_with_reformulating(school_data, question)
-                            st.write("Answer:", answer)
-               
-                main()
+            st.set_page_config(page_title="Chatbot d'Orientation", layout="wide")
+
+            st.title("🤖 Academic Orientation Chatbot")
+            st.write("Posez votre question sur les écoles supérieures marocaines (FR/AR/EN)")
+
+            if "chat_history" not in st.session_state:
+                st.session_state.chat_history = []
+
+            # Detect institution
+            def find_institution(user_input):
+                for name in data:
+                    if re.search(rf"\b{name}\b", user_input, re.IGNORECASE):
+                        return name
+                return None
+
+            # Detect language
+            def detect_language(text):
+                try:
+                    return detect(text)
+                except:
+                    return "en"
+
+            # Response builder
+            def get_response(user_input, lang):
+                institution = find_institution(user_input)
+                if not institution:
+                    return {
+                        "en": "❓ I couldn't identify the institution. Try 'ENSA', 'FMP', etc.",
+                        "fr": "❓ Je n’ai pas reconnu l’établissement. Essayez avec ‘ENSA’, ‘FMP’, etc.",
+                        "ar": "❓ لم أتمكن من تحديد المؤسسة. جرب استخدام أسماء مثل 'ENSA' أو 'FMP'."
+                    }.get(lang, "Sorry, I couldn’t understand.")
+    
+                info = data[institution]
+    
+                if lang == "fr":
+                    response = f"🏫 **{institution}**\n\n"
+                    response += f"📘 *{info.get('Presentation', '')}*\n\n"
+
+                    # Programmes
+                    response += "**📚 Programmes :**\n"
+                    prog = info.get("Programmes")
+                    if isinstance(prog, list):
+                        response += "\n".join(f"- {p}" for p in prog)
+                    elif isinstance(prog, dict):
+                        for cat, items in prog.items():
+                            response += f"**{cat}**\n"
+                            if isinstance(items, list):
+                                response += "\n".join(f"- {i}" for i in items) + "\n"
+                            else:
+                                response += f"- {items}\n"
+
+                    modalites = info.get("Modalites_Inscription", {})
+                    response += f"\n**📝 Admission :**\n- Conditions : {modalites.get('Conditions', '')}\n- Procédure : {modalites.get('Procedure', '')}\n"
+
+                    careers = info.get("Perspectives_Carriere", [])
+                    if careers:
+                        response += "\n**💼 Débouchés :**\n" + "\n".join(f"- {c}" for c in careers)
+
+                    response += f"\n\n**📍 Localisation :** {info.get('Localisation', '')}"
+                    return response
+
+                elif lang == "ar":
+                    response = f"🏫 **{institution}**\n\n"
+                    response += f"📘 {info.get('Presentation', '')}\n\n"
+
+                    response += "**📚 البرامج:**\n"
+                    prog = info.get("Programmes")
+                    if isinstance(prog, list):
+                        response += "\n".join(f"- {p}" for p in prog)
+                    elif isinstance(prog, dict):
+                        for cat, items in prog.items():
+                            response += f"**{cat}**\n"
+                            if isinstance(items, list):
+                                response += "\n".join(f"- {i}" for i in items) + "\n"
+                            else:
+                                response += f"- {items}\n"
+
+                    modalites = info.get("Modalites_Inscription", {})
+                    response += f"\n**📝 شروط القبول:**\n- الشروط: {modalites.get('Conditions', '')}\n- الإجراءات: {modalites.get('Procedure', '')}\n"
+
+                    careers = info.get("Perspectives_Carriere", [])
+                    if careers:
+                        response += "\n**💼 الآفاق المهنية:**\n" + "\n".join(f"- {c}" for c in careers)
+
+                    response += f"\n\n**📍 المكان:** {info.get('Localisation', '')}"
+                    return response
+
+                else:  # English fallback
+                    response = f"🏫 **{institution}**\n\n"
+                    response += f"📘 *{info.get('Presentation', '')}*\n\n"
+                    response += "**📚 Programs:**\n"
+                    prog = info.get("Programmes")
+                    if isinstance(prog, list):
+                        response += "\n".join(f"- {p}" for p in prog)
+                    elif isinstance(prog, dict):
+                        for cat, items in prog.items():
+                            response += f"**{cat}**\n"
+                            if isinstance(items, list):
+                                response += "\n".join(f"- {i}" for i in items) + "\n"
+                            else:
+                                response += f"- {items}\n"
+
+                    modalites = info.get("Modalites_Inscription", {})
+                    response += f"\n**📝 Admission:**\n- Conditions: {modalites.get('Conditions', '')}\n- Procedure: {modalites.get('Procedure', '')}\n"
+
+                    careers = info.get("Perspectives_Carriere", [])
+                    if careers:
+                        response += "\n**💼 Career Opportunities:**\n" + "\n".join(f"- {c}" for c in careers)
+
+                    response += f"\n\n**📍 Location:** {info.get('Localisation', '')}"
+                    return response
+
+            # Input area
+            st.chat_message("assistant").markdown("👋 Bonjour ! Posez une question comme : _“Qu’est-ce que l’ENCG ?”_ ou _“What can I study at ENSAM?”_")
+
+            user_input = st.chat_input("Tapez votre question ici...")
+
+            if user_input:
+                lang = detect_language(user_input)
+                response = get_response(user_input, lang)
+
+                # Save and show user message
+                st.session_state.chat_history.append(("user", user_input))
+                with st.chat_message("user", avatar="🧑"):
+                    st.markdown(user_input)
+
+                # Save and show bot response
+                st.session_state.chat_history.append(("bot", response))
+                with st.chat_message("assistant", avatar="🎓"):
+                    st.markdown(response)
+
+            # Show past chat
+            for role, msg in st.session_state.chat_history:
+                avatar = "🧑" if role == "user" else "🎓"
+                with st.chat_message(role, avatar=avatar):
+                    st.markdown(msg)
+
                             
 
             else:
