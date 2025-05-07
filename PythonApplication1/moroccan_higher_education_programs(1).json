@@ -1,5 +1,6 @@
 {
     "CPGE": {
+        "Presentation": "Les CPGE sont des classes intensives préparant aux concours d’entrée aux grandes écoles d’ingénieurs, de commerce ou de lettres.",
         "Programmes": [
             "MPSI",
             "PCSI",
@@ -17,9 +18,10 @@
             "Enseignement"
         ],
         "Localisation": "Présentes dans plusieurs lycées publics et privés à travers le Maroc (ex: Lycée Mohammed V à Rabat, Lycée Moulay Youssef à Rabat, etc.)",
-        "Presentation": "Les CPGE sont des classes intensives préparant aux concours d’entrée aux grandes écoles d’ingénieurs, de commerce ou de lettres."
+        
     },
     "ENSA": {
+        "Presentation": "Les ENSA forment des ingénieurs polyvalents dans divers domaines techniques avec une approche professionnalisante.",
         "Programmes": [
             "Génie Informatique",
             "Génie Industriel",
@@ -38,9 +40,10 @@
             "Postes d’ingénieurs dans divers secteurs industriels et technologiques"
         ],
         "Localisation": "Réseau de 11 ENSA au Maroc (Agadir, Fès, Tanger, Tétouan, Kénitra, Oujda, El Jadida, Safi, Al Hoceima, Marrakech, Khouribga)",
-        "Presentation": "Les ENSA forment des ingénieurs polyvalents dans divers domaines techniques avec une approche professionnalisante."
+        
     },
     "ENSAM": {
+        "Presentation": "Les ENSAM sont spécialisées dans la formation d’ingénieurs en génie mécanique, industriel et numérique.",
         "Programmes": [
             "Génie biomédical",
             "Génie Industriel et Technologie Numérique",
@@ -63,9 +66,10 @@
             "Numérique"
         ],
         "Localisation": "Présentes à Casablanca et Meknès",
-        "Presentation": "Les ENSAM sont spécialisées dans la formation d’ingénieurs en génie mécanique, industriel et numérique."
+        
     },
     "ENCG": {
+        "Presentation": "Les ENCG forment des cadres en commerce et gestion avec des spécialisations en marketing, finance, audit et logistique.",
         "Programmes": {
             "Gestion": [
                 "Gestion financière et comptable",
@@ -93,9 +97,10 @@
             "Commerce international"
         ],
         "Localisation": "11 établissements à travers le Maroc : Casablanca, Marrakech, Agadir, Settat, El Jadida, Fès, Oujda, Kénitra, Dakhla, Tanger, Laâyoune",
-        "Presentation": "Les ENCG forment des cadres en commerce et gestion avec des spécialisations en marketing, finance, audit et logistique."
+        
     },
     "FMP": {
+        "Presentation": "Les FMP forment des médecins et pharmaciens à travers un parcours long, scientifique et pratique.",
         "Programmes": {
             "Médecine": "7 ans avec stages hospitaliers",
             "Pharmacie": "6 ans avec stages en officine et industrie"
@@ -112,9 +117,10 @@
             "Enseignant"
         ],
         "Localisation": "Facultés à Rabat, Casablanca, Fès, Marrakech, Oujda, Agadir, Tanger, et Laâyoune",
-        "Presentation": "Les FMP forment des médecins et pharmaciens à travers un parcours long, scientifique et pratique."
+        
     },
     "IAV": {
+        "Presentation": "L’Institut Agronomique et Vétérinaire Hassan II est une référence nationale pour la formation en agronomie, médecine vétérinaire et environnement.",
         "Programmes": {
             "Cycle préparatoire": "1 an (APESA)",
             "Cycle ingénieur": [
