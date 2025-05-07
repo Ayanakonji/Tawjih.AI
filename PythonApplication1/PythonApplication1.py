@@ -165,9 +165,6 @@ else:
             # Load the JSON file
                 with open("moroccan_higher_education_programs(1).json", "r", encoding="utf-8") as f:
                     data = json.load(f)
-
-            st.set_page_config(page_title="Chatbot d'Orientation", layout="wide")
-
             st.title("🤖 Academic Orientation Chatbot")
             st.write("Posez votre question sur les écoles supérieures marocaines (FR/AR/EN)")
 
