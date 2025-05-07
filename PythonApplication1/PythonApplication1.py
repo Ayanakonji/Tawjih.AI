@@ -191,11 +191,12 @@ else:
                 # Identify requested section/topic
                 def find_topic(text):
                     text = text.lower()
-                    if re.search(r"\b(program|programme|programmes|برامج|تخصصات)\b", text):
+
+                    if re.search(r"\b(program|programme|programmes|specialties|specialisations|spécialité|p|برامج|تخصصات)\b", text):
                         return "Programmes"
                     elif re.search(r"\b(admission|inscription|modalité|modalites|شروط|ولوج)\b", text):
                         return "Modalites_Inscription"
-                    elif re.search(r"\b(carrière|career|débou|perspectives|فرص|وظائف)\b", text):
+                    elif re.search(r"\b(career|carrière|débou|perspectives|فرص|وظائف)\b", text):
                         return "Perspectives_Carriere"
                     elif re.search(r"\b(localisation|location|où|اين)\b", text):
                         return "Localisation"
@@ -203,6 +204,7 @@ else:
                         return "Presentation"
                     else:
                         return None
+
 
                 # Format each section
                 def format_section(info, topic, lang):
@@ -244,30 +246,34 @@ else:
                     institution = find_institution(user_input)
                     topic = find_topic(user_input)
 
-                    # Use last mentioned institution if missing
+                    # Use last mentioned institution if not detected
                     if not institution:
                         institution = st.session_state.get("last_institution")
 
+                    # If still missing
                     if not institution:
                         return {
                             "fr": "❓ Je n’ai pas reconnu l’établissement.",
                             "ar": "❓ لم أتمكن من تحديد المؤسسة.",
                             "en": "❓ I couldn't identify the institution."
-                        }.get(lang, "Institution not found.")
+                        }.get(lang)
 
-                    # 🔥 Save current institution for follow-up questions
+                    # Remember for later messages
                     st.session_state.last_institution = institution
 
                     info = data[institution]
 
+                    # ✅ If topic found, respond immediately
                     if topic:
                         return format_section(info, topic, lang)
-                    else:
-                        return {
-                            "fr": f"❓ Vous avez mentionné **{institution}**...",
-                            "ar": f"❓ لقد ذكرت **{institution}**...",
-                            "en": f"❓ You mentioned **{institution}**..."
-                        }.get(lang, "Please clarify your question.")
+
+                    # ❌ Otherwise, ask user to clarify
+                    return {
+                        "fr": f"❓ Vous avez mentionné **{institution}**. Souhaitez-vous connaître ses *programmes*, *admission*, *localisation* ou *débouchés* ?",
+                        "ar": f"❓ لقد ذكرت **{institution}**. هل تريد معرفة *البرامج* أو *شروط القبول* أو *الموقع* أو *الآفاق*؟",
+                        "en": f"❓ You mentioned **{institution}**. Would you like to know about *programs*, *admission*, *location*, or *careers*?"
+                    }.get(lang)
+
 
 
                     # Input box
