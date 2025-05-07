@@ -159,7 +159,7 @@ else:
             st.subheader("More Informations:")
             st.write("Agree to know more informations to deeply know about your choice, if you are then select yes, if it isn't then select no")
             more_information = st.radio("Do you want to know more informations about your choices", ["Yes", "No"])
-            if more_information == "Yes":
+
                 
                 
             # What i am gonna do is to make two condionals if it yes then i will add the extra diagnostic questions if it no then i will make a question 
