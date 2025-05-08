@@ -296,34 +296,39 @@ else:
                             
 
             else:
+                # Inject custom CSS for centered title and star style
                 st.markdown("""
-                <style>
-                .star-rating {
-                    font-size: 2.5rem;
-                    color: #d3d3d3;
-                    cursor: pointer;
-                }
-                .star-rating .selected {
-                    color: #ffc107;
-                }
-                .center {
-                    text-align: center;
-                }
-                </style>
-            """, unsafe_allow_html=True)
+                    <style>
+                    .star-rating {
+                        font-size: 2.5rem;
+                        color: #d3d3d3;
+                        cursor: pointer;
+                    }
+                    .star-rating .selected {
+                        color: #ffc107;
+                    }
+                    .center {
+                        text-align: center;
+                    }
+                    </style>
+                """, unsafe_allow_html=True)
 
-            st.markdown("<h1 class='center'>Rate Our Service</h1>", unsafe_allow_html=True)
+                # Centered title
+                st.markdown("<h1 class='center'>⭐ Rate Our Service</h1>", unsafe_allow_html=True)
 
-            # Rating widget using Streamlit radio buttons styled with emojis
-            rating = st.radio(
-                "How would you rate us?",
-                options=[1, 2, 3, 4, 5],
-                format_func=lambda x: "⭐" * x,
-                horizontal=True
-            )
+                # Star rating with emojis
+                rating = st.radio(
+                    "How would you rate us?",
+                    options=[1, 2, 3, 4, 5],
+                    format_func=lambda x: "⭐" * x,
+                    horizontal=True
+                )
 
-            feedback = st.text_area("Optional Feedback", placeholder="Tell us more...")
-            if st.button("Submit"):
-               st.success(f"Thanks for rating us {rating} star{'s' if rating > 1 else ''}!")
-               if feedback:
-                  st.info(f"Your feedback: {feedback}")
+                # Optional feedback
+                feedback = st.text_area("Optional Feedback", placeholder="Tell us more...")
+
+                # Submit button
+                if st.button("Submit"):
+                    st.success(f"Thanks for rating us {rating} star{'s' if rating > 1 else ''}! 🌟")
+                    if feedback:
+                        st.info(f"📝 Your feedback: {feedback}")
