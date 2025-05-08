@@ -332,3 +332,9 @@ else:
                     st.success(f"Thanks for rating us {rating} star{'s' if rating > 1 else ''}! 🌟")
                     if feedback:
                         st.info(f"📝 Your feedback: {feedback}")
+
+
+
+
+                        # I finish this project!!!!                        
+                        # # I am so happy to finish this project, I hope you like it and find it useful
