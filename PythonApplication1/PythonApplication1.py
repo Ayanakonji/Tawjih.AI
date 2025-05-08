@@ -296,6 +296,34 @@ else:
                             
 
             else:
-                st.write("How do you rate the result of the first diagnostic test")
-                rate = st.radio("Rate", ["1", "2", "3", "4", "5"])
-                st.button("Go back to the first diagnostic test", on_click=lambda: st.session_state.clear())
+                st.markdown("""
+                <style>
+                .star-rating {
+                    font-size: 2.5rem;
+                    color: #d3d3d3;
+                    cursor: pointer;
+                }
+                .star-rating .selected {
+                    color: #ffc107;
+                }
+                .center {
+                    text-align: center;
+                }
+                </style>
+            """, unsafe_allow_html=True)
+
+            st.markdown("<h1 class='center'>Rate Our Service</h1>", unsafe_allow_html=True)
+
+            # Rating widget using Streamlit radio buttons styled with emojis
+            rating = st.radio(
+                "How would you rate us?",
+                options=[1, 2, 3, 4, 5],
+                format_func=lambda x: "⭐" * x,
+                horizontal=True
+            )
+
+            feedback = st.text_area("Optional Feedback", placeholder="Tell us more...")
+            if st.button("Submit"):
+               st.success(f"Thanks for rating us {rating} star{'s' if rating > 1 else ''}!")
+               if feedback:
+                  st.info(f"Your feedback: {feedback}")
